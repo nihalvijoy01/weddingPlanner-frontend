@@ -1,0 +1,23 @@
+/* src/App.css or src/index.css */
+
+.container-fluid {
+    background-color: #ffffff; /* Match background color */
+    height: 40vh;
+    width: 80vw;
+  }
+  
+  .h2f1 {
+    font-family: serif; /* Custom font family if needed */
+    font-weight: bold;
+    font-size: 3vw;
+  }
+  
+  .pf1 {
+    font-family: sans-serif;
+    color: #555; /* Light text color */
+    font-size: 1.2vw;
+
+  }
+
+  
+  
