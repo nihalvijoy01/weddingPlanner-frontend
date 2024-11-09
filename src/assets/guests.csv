@@ -1,0 +1,6 @@
+name,email,phone_number,dietary_preferences,plus_one,attending
+John Doe,john@example.com,1234567890,Vegetarian,true,true
+Jane Smith,jane@example.com,0987654321,Vegan,false,true
+Alex Johnson,alex@example.com,1122334455,Gluten-Free,true,false
+Emily Davis,emily@example.com,6677889900,None,false,true
+Chris Lee,chris@example.com,5566778899,Kosher,true,false

@@ -10,6 +10,8 @@ import WeddingProjects from "./pages/WeddingPage";
 import ManageGuests from "./pages/ManageGuests";
 import ManageChecklist from "./pages/ManageChecklist";
 import Navbar from "./components/Navbar";
+import ManageBudget from "./pages/ManageBudgets";
+import VendorList from "./pages/VendorList";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -34,6 +36,11 @@ function App() {
             path="/weddings/:weddingId/checklist"
             element={<ManageChecklist />}
           />
+          <Route
+            path="/weddings/:weddingId/budget"
+            element={<ManageBudget />}
+          />
+          <Route path="/weddings/:weddingId/vendors" element={<VendorList />} />
         </Routes>
       </Router>
     </>
