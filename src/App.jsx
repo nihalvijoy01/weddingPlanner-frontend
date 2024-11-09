@@ -12,6 +12,7 @@ import ManageChecklist from "./pages/ManageChecklist";
 import Navbar from "./components/Navbar";
 import ManageBudget from "./pages/ManageBudgets";
 import VendorList from "./pages/VendorList";
+import WeddingForm from "./pages/WeddingForm";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -41,6 +42,10 @@ function App() {
             element={<ManageBudget />}
           />
           <Route path="/weddings/:weddingId/vendors" element={<VendorList />} />
+          <Route
+            path="/weddings/:weddingId/website"
+            element={<WeddingForm />}
+          />
         </Routes>
       </Router>
     </>

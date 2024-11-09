@@ -64,12 +64,17 @@ const AddWeddingProject = () => {
 
   return (
     <div className="add-wedding-project-container">
-      <h2 className="flex justify-center">Wedding Projects</h2>
+      <h2 className="flex justify-center mb-4 text-xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl">
+        Your Wedding Projects
+      </h2>
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}
 
       {!showForm && (
-        <button onClick={handleAddNewClick} className="add-new-button">
+        <button
+          onClick={handleAddNewClick}
+          class="text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 f"
+        >
           Add New
         </button>
       )}

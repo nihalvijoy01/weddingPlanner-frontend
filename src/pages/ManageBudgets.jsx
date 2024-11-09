@@ -1,47 +1,52 @@
+// src/pages/ManageBudget.js
+
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import AddBudgetItem from "../components/AddBudgetItem";
 import BudgetList from "../components/BudgetList";
 import DashboardSidebar from "../components/DashboardSidebar";
-import { useParams } from "react-router-dom";
+import {
+  fetchWeddingDetails,
+  fetchBudgetItems,
+  addBudgetItem,
+  deleteBudgetItem,
+} from "../features/budget/budgetSlice";
 
 const ManageBudget = () => {
   const { weddingId } = useParams();
-  const [budgetItems, setBudgetItems] = useState([]);
+  const dispatch = useDispatch();
+
+  // Get the state from the Redux store
+  const { totalBudget, budgetItems, error, loading } = useSelector(
+    (state) => state.budget
+  );
+
   const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
-    const fetchBudgetItems = async () => {
-      const token = localStorage.getItem("access_token");
-      try {
-        const response = await axios.get(
-          `http://localhost:8000/api/weddings/${weddingId}/budget/`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setBudgetItems(response.data);
-      } catch (err) {
-        console.error("Failed to fetch budget items", err);
-      }
-    };
+    const token = localStorage.getItem("access_token");
+    dispatch(fetchWeddingDetails({ weddingId, token }));
+    dispatch(fetchBudgetItems({ weddingId, token }));
+  }, [weddingId, dispatch]);
 
-    fetchBudgetItems();
-  }, [weddingId]);
+  // Calculate the total amount of budget items
+  const totalBudgetSpent = budgetItems.reduce((sum, item) => {
+    return sum + (parseFloat(item.allocated_amount) || 0); // Ensure each item amount is a number
+  }, 0);
 
-  const addBudgetItem = (newItem) => {
-    setBudgetItems([...budgetItems, newItem]);
+  console.log(budgetItems);
+
+  const remainingBudget = totalBudget - totalBudgetSpent;
+
+  const handleAddBudgetItem = (newItem) => {
+    const token = localStorage.getItem("access_token");
+    dispatch(addBudgetItem({ weddingId, newItem, token }));
   };
 
-  const deleteBudgetItem = async (itemId) => {
+  const handleDeleteBudgetItem = (itemId) => {
     const token = localStorage.getItem("access_token");
-    try {
-      await axios.delete(
-        `http://localhost:8000/api/weddings/${weddingId}/budget/${itemId}/`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setBudgetItems(budgetItems.filter((item) => item.id !== itemId));
-    } catch (err) {
-      console.error("Failed to delete budget item", err);
-    }
+    dispatch(deleteBudgetItem({ weddingId, itemId, token }));
   };
 
   return (
@@ -59,12 +64,20 @@ const ManageBudget = () => {
         </button>
 
         {showAddForm && (
-          <AddBudgetItem addBudgetItem={addBudgetItem} weddingId={weddingId} />
+          <AddBudgetItem
+            addBudgetItem={handleAddBudgetItem}
+            weddingId={weddingId}
+          />
         )}
-
+        {/* Display the remaining wedding budget */}
+        <div className="mt-4">
+          <h3 className="text-xl font-semibold">
+            Remaining Budget: ${remainingBudget.toFixed(2)}
+          </h3>
+        </div>
         <BudgetList
           budgetItems={budgetItems}
-          deleteBudgetItem={deleteBudgetItem}
+          deleteBudgetItem={handleDeleteBudgetItem}
         />
       </div>
     </>

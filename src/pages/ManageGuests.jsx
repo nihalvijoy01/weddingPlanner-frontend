@@ -78,7 +78,12 @@ const ManageGuests = () => {
       const response = await axios.post(
         `http://localhost:8000/api/weddings/${weddingId}/guests/`,
         newGuest,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       setGuests([...guests, response.data]);
       setNewGuest({
