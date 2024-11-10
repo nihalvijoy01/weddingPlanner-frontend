@@ -6,6 +6,7 @@ import {
   deleteWedding,
 } from "../features/weddings/weddingSlice";
 import AddWeddingProject from "../components/AddWeddingProject";
+import { Navbar } from "react-bootstrap";
 
 const WeddingProjects = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,11 @@ const WeddingProjects = () => {
 
   return (
     <div className="flex flex-col w-full space-y-4 p-4">
+      <h2 className="mb-4 text-xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl">
+        Your Wedding Projects
+      </h2>
       <AddWeddingProject weddingId />
+
       {status === "loading" && <p>Loading...</p>}
       {status === "failed" && <p>{error}</p>}
       {status === "succeeded" && weddings.length > 0 ? (
@@ -55,7 +60,7 @@ const WeddingProjects = () => {
               <div className="block w-full p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 <a onClick={() => handleSelectWedding(wedding.id)} href="#">
                   <div>
-                    <h3>{wedding.venue}</h3>
+                    <h3 className="text-lg font-bold">{wedding.description}</h3>
                     <p>
                       <strong>Date:</strong>{" "}
                       {new Date(wedding.date).toLocaleDateString()}
@@ -64,7 +69,7 @@ const WeddingProjects = () => {
                       <strong>Budget:</strong> ${wedding.budget}
                     </p>
                     <p>
-                      <strong>Description:</strong> {wedding.description}
+                      <strong>Venue:</strong> {wedding.venue}
                     </p>
                   </div>
                 </a>

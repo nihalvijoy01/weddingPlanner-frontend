@@ -13,6 +13,7 @@ import Navbar from "./components/Navbar";
 import ManageBudget from "./pages/ManageBudgets";
 import VendorList from "./pages/VendorList";
 import WeddingForm from "./pages/WeddingForm";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -21,30 +22,91 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/weddings" element={<WeddingProjects />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Navbar />
+                <Landing />
+              </>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <>
+                <Navbar />
+                <LoginPage />
+              </>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <>
+                <Navbar />
+                <RegisterPage />
+              </>
+            }
+          />
+          <Route
+            path="/weddings"
+            element={
+              <ProtectedRoute>
+                <>
+                  <Navbar />
+                  <WeddingProjects />
+                </>
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/weddings/:weddingId/dashboard"
-            element={<WeddingDashboard />}
+            element={
+              <ProtectedRoute>
+                <WeddingDashboard />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/weddings/:weddingId/guests"
-            element={<ManageGuests />}
+            element={
+              <ProtectedRoute>
+                <ManageGuests />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/weddings/:weddingId/checklist"
-            element={<ManageChecklist />}
+            element={
+              <ProtectedRoute>
+                <ManageChecklist />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/weddings/:weddingId/budget"
-            element={<ManageBudget />}
+            element={
+              <ProtectedRoute>
+                <ManageBudget />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/weddings/:weddingId/vendors" element={<VendorList />} />
+          <Route
+            path="/weddings/:weddingId/vendors"
+            element={
+              <ProtectedRoute>
+                <VendorList />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/weddings/:weddingId/website"
-            element={<WeddingForm />}
+            element={
+              <ProtectedRoute>
+                <WeddingForm />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </Router>

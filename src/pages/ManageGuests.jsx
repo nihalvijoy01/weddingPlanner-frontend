@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import {
+  fetchGuests,
+  addGuest,
+  deleteGuest,
+  updateGuest,
+} from "../features/guests/guestSlice";
 import AddGuest from "../components/AddGuest";
 import GuestList from "../components/GuestList";
 import DashboardSidebar from "../components/DashboardSidebar";
-import { fetchGuests } from "../features/guests/guestSlice";
 
 const ManageGuests = () => {
   const { weddingId } = useParams();
-  const [guests, setGuests] = useState([]);
-  const [showAddGuestForm, setShowAddGuestForm] = useState(false);
+  const dispatch = useDispatch();
+  const { guests, status, error } = useSelector((state) => state.guests);
+
   const [newGuest, setNewGuest] = useState({
     name: "",
     email: "",
@@ -19,22 +25,9 @@ const ManageGuests = () => {
     attending: false,
   });
 
-  const fetchGuests = async () => {
-    const token = localStorage.getItem("access_token");
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/weddings/${weddingId}/guests/`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setGuests(response.data);
-    } catch (err) {
-      console.error("Failed to fetch guests", err);
-    }
-  };
-
   useEffect(() => {
-    fetchGuests();
-  }, [weddingId]);
+    dispatch(fetchGuests(weddingId));
+  }, [weddingId, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -44,89 +37,25 @@ const ManageGuests = () => {
     }));
   };
 
-  const handleCSVUpload = async (e) => {
-    const token = localStorage.getItem("access_token");
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await axios.post(
-        `http://localhost:8000/api/weddings/${weddingId}/guests/upload_csv/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      alert("CSV file uploaded successfully!");
-      fetchGuests();
-    } catch (err) {
-      console.error("Failed to upload CSV", err);
-      alert("Failed to upload CSV file.");
-    }
-  };
-
-  const handleAddGuest = async (e) => {
+  const handleAddGuest = (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("access_token");
-    try {
-      const response = await axios.post(
-        `http://localhost:8000/api/weddings/${weddingId}/guests/`,
-        newGuest,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setGuests([...guests, response.data]);
-      setNewGuest({
-        name: "",
-        email: "",
-        phone_number: "",
-        dietary_preferences: "",
-        plus_one: false,
-        attending: false,
-      });
-      setShowAddGuestForm(false); // Hide form after adding guest
-    } catch (err) {
-      console.error("Failed to add guest", err);
-    }
+    dispatch(addGuest({ weddingId, newGuest }));
+    setNewGuest({
+      name: "",
+      email: "",
+      phone_number: "",
+      dietary_preferences: "",
+      plus_one: false,
+      attending: false,
+    });
   };
 
-  const handleDeleteGuest = async (guestId) => {
-    const token = localStorage.getItem("access_token");
-    try {
-      await axios.delete(
-        `http://localhost:8000/api/weddings/${weddingId}/guests/${guestId}/`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setGuests(guests.filter((guest) => guest.id !== guestId));
-    } catch (err) {
-      console.error("Failed to delete guest", err);
-    }
+  const handleDeleteGuest = (guestId) => {
+    dispatch(deleteGuest({ weddingId, guestId }));
   };
 
-  const handleUpdateGuest = async (guestId, updatedGuest) => {
-    const token = localStorage.getItem("access_token");
-    try {
-      const response = await axios.put(
-        `http://localhost:8000/api/weddings/${weddingId}/guests/${guestId}/`,
-        updatedGuest,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setGuests(
-        guests.map((guest) => (guest.id === guestId ? response.data : guest))
-      );
-    } catch (err) {
-      console.error("Failed to update guest", err);
-    }
+  const handleUpdateGuest = (guestId, updatedGuest) => {
+    dispatch(updateGuest({ weddingId, guestId, updatedGuest }));
   };
 
   return (
@@ -147,7 +76,6 @@ const ManageGuests = () => {
           className="block text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
           id="file_input"
           type="file"
-          onChange={handleCSVUpload}
         />
 
         <div className="flex flex-row justify-end">
@@ -158,11 +86,15 @@ const ManageGuests = () => {
           />
         </div>
 
-        <GuestList
-          guests={guests}
-          handleDeleteGuest={handleDeleteGuest}
-          handleUpdateGuest={handleUpdateGuest}
-        />
+        {status === "loading" && <p>Loading guests...</p>}
+        {status === "failed" && <p>{error}</p>}
+        {status === "succeeded" && (
+          <GuestList
+            guests={guests}
+            handleDeleteGuest={handleDeleteGuest}
+            handleUpdateGuest={handleUpdateGuest}
+          />
+        )}
       </div>
     </>
   );
